@@ -10,17 +10,24 @@
 		"splash": {
 			"image": "./assets/images/splash.png",
 			"resizeMode": "contain",
-			"backgroundColor": "#FFFFFF"
+			"backgroundColor": "#F2F2F2"
 		},
 		"ios": {
-			"supportsTablet": true
+			"supportsTablet": true,
+			"bundleIdentifier": "com.matcont.app"
 		},
 		"android": {
 			"adaptiveIcon": {
 				"foregroundImage": "./assets/images/adaptive-icon.png",
-				"backgroundColor": "#FFFFFF"
+				"backgroundColor": "#F2F2F2"
 			},
-			"package": "com.matcont.app"
+			"package": "com.matcont.app",
+			"permissions": [
+				"android.permission.READ_EXTERNAL_STORAGE",
+				"android.permission.WRITE_EXTERNAL_STORAGE",
+				"android.permission.DOWNLOAD_WITHOUT_NOTIFICATION",
+				"android.permission.ACCESS_NETWORK_STATE"
+			]
 		},
 		"web": {
 			"bundler": "metro",
@@ -34,7 +41,16 @@
 				{
 					"fonts": ["./assets/fonts/Manrope.ttf"]
 				}
-			]
+			],
+			[
+				"expo-secure-store",
+				{
+					"faceIDPermission": "Allow $(PRODUCT_NAME) to access your Face ID biometric data."
+				}
+			],
+			"expo-asset",
+			"@config-plugins/react-native-blob-util",
+			"@config-plugins/react-native-pdf"
 		],
 		"experiments": {
 			"typedRoutes": true

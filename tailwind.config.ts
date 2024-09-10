@@ -11,6 +11,10 @@ module.exports = {
 				medium: '#0597F2',
 				dark: '#0583F2',
 			},
+			red: {
+				light: '#f25757',
+				medium: '#f20505',
+			},
 		},
 	},
 };

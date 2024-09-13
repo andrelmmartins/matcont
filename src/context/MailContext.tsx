@@ -1,4 +1,4 @@
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -38,6 +38,9 @@ export default function MailProvider(props: { children: React.ReactNode }) {
 	const [challengeData, setChallengeData] = useState<Record<string, ChallengeResult>>({});
 	const { notify } = useNotification();
 
+	const adminEmail = process.env.EXPO_PUBLIC_EMAIL ?? '';
+	const apiKey = process.env.EXPO_PUBLIC_API_KEY ?? '';
+
 	async function send(result: ChallengeResult) {
 		if (user) {
 			setSending(true);
@@ -49,16 +52,19 @@ export default function MailProvider(props: { children: React.ReactNode }) {
 
 				AsyncStorage.setItem(storageChallenges, JSON.stringify(challengeData));
 
-				await sendMail({
-					to: [{ email: 'andre.lucas.medeir+professor@gmail.com', name: 'André' }],
-					cc: [user],
-					from: {
-						email: 'matcont@trial-3vz9dlek58qlkj50.mlsender.net',
-						name: 'MatCont',
+				await sendMail(
+					{
+						to: [{ email: adminEmail, name: 'Admin' }],
+						cc: [user],
+						from: {
+							email: 'matcont@trial-3vz9dlek58qlkj50.mlsender.net',
+							name: 'MatCont',
+						},
+						html: generateEmail(result, user),
+						subject: `Olá, acabo de realizar o desafio de ${result.classe.title}`,
 					},
-					html: generateEmail(result, user),
-					subject: `Olá, acabo de realizar o desafio de ${result.classe.title}`,
-				});
+					apiKey,
+				);
 
 				notify({ variant: 'success', title: 'Desafio submetido!' });
 			} catch (e) {
@@ -121,32 +127,33 @@ export default function MailProvider(props: { children: React.ReactNode }) {
 
 			<BottomSheet ref={bottomSheetRef}>
 				<>
-					<Text className="text-center font-bold text-xl">Seja bem-vindo!</Text>
-					<Text className="text-center mb-4">
-						Para que você possa aproveitar o nosso curso, você precisa fornecer o seu nome e seu e-mail para
-						futuras comunicações.
-					</Text>
-					<Input
-						control={control}
-						name="name"
-						label="Nome"
-						textContentType="name"
-						rules={{
-							required: 'Informe seu nome',
-						}}
-					/>
-					<Input
-						className="-mt-2"
-						control={control}
-						name="email"
-						label="E-mail"
-						textContentType="emailAddress"
-						keyboardType="email-address"
-						rules={{
-							required: 'Informe o e-mail',
-							validate: (value) => validateEmail(value) || 'E-mail inválido',
-						}}
-					/>
+					<View className="flex w-full" style={{ gap: 16 }}>
+						<Text className="text-center font-bold text-xl">Seja bem-vindo!</Text>
+						<Text className="text-center mb-2">
+							Para que você possa aproveitar o nosso curso, você precisa fornecer o seu nome e seu e-mail
+							para futuras comunicações.
+						</Text>
+						<Input
+							control={control}
+							name="name"
+							label="Nome"
+							textContentType="name"
+							rules={{
+								required: 'Informe seu nome',
+							}}
+						/>
+						<Input
+							control={control}
+							name="email"
+							label="E-mail"
+							textContentType="emailAddress"
+							keyboardType="email-address"
+							rules={{
+								required: 'Informe o e-mail',
+								validate: (value) => validateEmail(value) || 'E-mail inválido',
+							}}
+						/>
+					</View>
 					<Button label="Salvar" variant="primary" className="mt-4" onPress={handleSubmit(onSubmit)} />
 				</>
 			</BottomSheet>
